@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">LogoPassv1</string>
+    <!-- Strings related to login -->
+    <string name="prompt_email">Логин</string>
+    <string name="prompt_password">Пароль</string>
+    <string name="action_sign_in">Вход</string>
+    <string name="action_sign_in_short">Вход</string>
+    <string name="welcome">"Верно"</string>
+    <string name="invalid_username">Логин не верен</string>
+    <string name="invalid_password">Пароль больше >5 символов</string>
+    <string name="login_failed">"Вы ошиблись в логине или пароле"</string>
+</resources>

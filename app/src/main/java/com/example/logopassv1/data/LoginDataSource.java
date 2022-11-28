@@ -21,7 +21,7 @@ public class LoginDataSource {
             LoggedInUser fakeUser =
                     new LoggedInUser(username,
 //                            java.util.UUID.randomUUID().toString(),
-                            " ALEX ZAIN");
+                            username);
             if (Objects.equals(username, MYLOGIN) && Objects.equals(password, MYPASSWORD)) {
                 Log.d("TAG","Username___"+username);
                 return new Result.Success<>(fakeUser);

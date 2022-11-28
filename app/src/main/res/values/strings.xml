@@ -9,4 +9,6 @@
     <string name="invalid_username">Логин не верен</string>
     <string name="invalid_password">Пароль больше >5 символов</string>
     <string name="login_failed">"Вы ошиблись в логине или пароле"</string>
+    <string name="resultstext">Успех</string>
+    <string name="results_text">results text</string>
 </resources>

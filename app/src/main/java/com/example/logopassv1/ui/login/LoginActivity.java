@@ -1,8 +1,17 @@
 package com.example.logopassv1.ui.login;
 
+import static com.example.logopassv1.R.color.purple_700;
+import static com.example.logopassv1.R.string.login_failed;
+import static com.example.logopassv1.R.string.results_text;
+import static com.example.logopassv1.R.string.resultstext;
+
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.MediaRouteButton;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProvider;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -26,13 +35,12 @@ import com.example.logopassv1.databinding.ActivityLoginBinding;
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
-    private ActivityLoginBinding binding;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //check all bindings for UI
-        binding = ActivityLoginBinding.inflate(getLayoutInflater());
+        com.example.logopassv1.databinding.ActivityLoginBinding binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory())
@@ -42,6 +50,9 @@ public class LoginActivity extends AppCompatActivity {
         final EditText passwordEditText = binding.password;
         final Button loginButton = binding.login;
         final ProgressBar loadingProgressBar = binding.loading;
+        final TextView resultsTextView = binding.resultstextview;
+//прячем надпись
+        resultsTextView.setVisibility(View.GONE);
 
         loginViewModel.getLoginFormState().observe(this, loginFormState -> {
             if (loginFormState == null) {
@@ -64,10 +75,10 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 loadingProgressBar.setVisibility(View.GONE);
                 if (loginResult.getError() != null) {
-                    showLoginFailed(loginResult.getError());
+                    showLoginFailed(loginResult.getError(),resultsTextView);
                 }
                 if (loginResult.getSuccess() != null) {
-                    updateUiWithUser(loginResult.getSuccess());
+                    updateUiWithUser(loginResult.getSuccess(),resultsTextView);
                 }
 //                setResult(Activity.RESULT_OK);
 //
@@ -96,6 +107,7 @@ public class LoginActivity extends AppCompatActivity {
         };
         usernameEditText.addTextChangedListener(afterTextChangedListener);
         passwordEditText.addTextChangedListener(afterTextChangedListener);
+
         passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
             @Override
@@ -121,13 +133,35 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void updateUiWithUser(LoggedInUserView model) {
-        String welcome = getString(R.string.welcome) + model.getDisplayName();
-        // TODO : initiate successful logged in experience
+
+    @SuppressLint("ResourceAsColor")
+    private void updateUiWithUser(LoggedInUserView model, TextView rt) {
+        String welcome = getString(R.string.welcome)+ " " + model.getDisplayName();
+        //  initiate successful logged in experience
         Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            rt.setTextColor(Color.green(Color.GREEN));
+//        }
+
+        rt.setTextColor(Color.GREEN);
+//        rt.setTextSize(33);
+        rt.setText(resultstext);
+//        rt.setVisibility(View.VISIBLE);
+        showResultsText(rt);
+        
     }
 
-    private void showLoginFailed(@StringRes Integer errorString) {
+    private void showLoginFailed(@StringRes Integer errorString,TextView rt) {
         Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+        rt.setTextColor(Color.RED);
+//        rt.setTextSize(33);
+        rt.setText(login_failed);
+//        rt.setVisibility(View.VISIBLE);
+        showResultsText(rt);
+    }
+    private void showResultsText(TextView rt) {
+        rt.setTextSize(33);
+        rt.setVisibility(View.VISIBLE);
+
     }
 }

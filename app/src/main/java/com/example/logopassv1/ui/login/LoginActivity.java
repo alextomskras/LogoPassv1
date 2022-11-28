@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.app.MediaRouteButton;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProvider;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,8 +20,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -32,15 +35,18 @@ import com.example.logopassv1.ui.login.LoginViewModel;
 import com.example.logopassv1.ui.login.LoginViewModelFactory;
 import com.example.logopassv1.databinding.ActivityLoginBinding;
 
+import java.security.AccessController;
+
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //check all bindings for UI
-        com.example.logopassv1.databinding.ActivityLoginBinding binding = ActivityLoginBinding.inflate(getLayoutInflater());
+        ActivityLoginBinding binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory())
@@ -76,14 +82,18 @@ public class LoginActivity extends AppCompatActivity {
                 loadingProgressBar.setVisibility(View.GONE);
                 if (loginResult.getError() != null) {
                     showLoginFailed(loginResult.getError(),resultsTextView);
+//                    cleanLoginPass(usernameEditText,passwordEditText);
                 }
                 if (loginResult.getSuccess() != null) {
                     updateUiWithUser(loginResult.getSuccess(),resultsTextView);
+//                    cleanLoginPass(usernameEditText,passwordEditText);
                 }
+
 //                setResult(Activity.RESULT_OK);
 //
 //                //Complete and destroy login activity once successful
 //                finish();
+
             }
         });
 
@@ -162,6 +172,29 @@ public class LoginActivity extends AppCompatActivity {
     private void showResultsText(TextView rt) {
         rt.setTextSize(33);
         rt.setVisibility(View.VISIBLE);
+        cleanLoginPass();
+    }
 
+    private void cleanLoginPass(){
+        EditText usrTe = findViewById(R.id.username);
+        EditText passTe = findViewById(R.id.password);
+        usrTe.setText("");
+        passTe.setText("");
+    }
+// скрываем клавиатуру при нажатии в любом месте кроме EditText
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+            View v = getCurrentFocus();
+            if (v instanceof EditText) {
+                v.clearFocus();
+                InputMethodManager imm = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+
+            }
+        }
+
+
+        return super.dispatchTouchEvent(ev);
     }
 }
